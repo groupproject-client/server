@@ -3,17 +3,6 @@ const http = require('http').Server(app)
 const io = require('socket.io')(http)
 const PORT = process.env.PORT || 3000
 
-/*
-PLAN:
-- kondisi awal: kedua tim waiting for player
-- ijinkan user connect
-- ijinkan user menekan tombol select team
-  - set status tim menjadi ready to play. Lock tim tersebut menggunakan id player
-    - jika disconnect: reset status tim menjadi waiting for player
-  - matikan tombol select team 2
-  - tunggu user ke 2 menekan tombol select team
-*/
-
 let stateTeam = {
   team1Ready: false,
   user1: '',
@@ -33,7 +22,7 @@ let team2HasReportProgres = false
 
 io.on('connection', (socket) => {
   console.log('a user connected')
-  console.log(stateTeam)
+  console.log(stateTeam, '<<! Game status sent')
   const userId = socket.id
 
   socket.emit('init', stateTeam)
@@ -42,7 +31,7 @@ io.on('connection', (socket) => {
     console.log('Tombol 1 got clicked')
     stateTeam.team1Ready = true
     stateTeam.user1 = userId
-    console.log(stateTeam)
+    console.log(stateTeam, '<<! Play as Team 1')
     io.emit('reply_tombol1', stateTeam)
   })
 
@@ -50,7 +39,7 @@ io.on('connection', (socket) => {
     console.log('Tombol 2 got clicked')
     stateTeam.team2Ready = true
     stateTeam.user2 = userId
-    console.log(stateTeam)
+    console.log(stateTeam, '<<! Play as Team 2')
     io.emit('reply_tombol2', stateTeam)
   })
 
